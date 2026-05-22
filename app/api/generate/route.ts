@@ -10,8 +10,8 @@ export async function GET() {
 
   try {
     const prompt = `You are a professional news editor for a major publication called "National Voice". 
-    Generate 5 realistic, completely different breaking news articles for today.
-    Categories should randomly be chosen from: Politics, World, Business, Sports, Entertainment, India.
+    Generate 12 realistic, completely different breaking news articles for today.
+    You MUST cover these exact categories evenly: Politics, World, Business, Sports, Entertainment, India.
     
     Return ONLY a valid JSON array of objects with this exact format, without any markdown formatting or extra text:
     [
