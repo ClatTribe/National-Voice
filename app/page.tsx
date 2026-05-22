@@ -26,10 +26,10 @@ export default async function HomePage() {
   // Dummy fallback data if DB is empty
   const dummyNews = {
     id: 999,
-    title: 'Welcome to National Voice',
-    summary: 'Fetching latest news...',
+    title: 'Breaking News Coverage',
+    summary: 'Stay tuned for the latest news updates and comprehensive coverage from National Voice.',
     category: 'News',
-    slug: 'welcome',
+    slug: 'breaking-news',
     image_url: null,
     published_at: new Date().toISOString(),
     source_name: 'System',
