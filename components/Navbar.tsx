@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Search, Menu, Tv } from 'lucide-react';
+import { Search, Menu, X } from 'lucide-react';
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const isActive = (path: string) => pathname === path;
 
@@ -28,10 +30,7 @@ export default function Navbar() {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 font-heading group">
-            <div className="text-2xl font-bold leading-none tracking-tight">
-              <span className="group-hover:text-primary-red transition-colors duration-300">NATIONAL</span>{' '}
-              <span className="text-primary-red group-hover:text-white transition-colors duration-300">VOICE</span>
-            </div>
+            <img src="/national-voice-logo.jpg" alt="National Voice" className="h-10 sm:h-12 w-auto object-contain rounded" />
           </Link>
 
           {/* Desktop Menu */}
@@ -52,15 +51,26 @@ export default function Navbar() {
               <Search className="w-5 h-5" />
             </button>
             
-            <button className="hidden sm:flex items-center gap-2 bg-primary-red hover:bg-red-700 transition-all duration-300 transform hover:scale-105 shadow-[0_0_15px_rgba(198,40,40,0.5)] text-white px-4 py-1.5 rounded text-sm font-bold tracking-wide">
-              <Tv className="w-4 h-4 animate-pulse" /> LIVE TV
-            </button>
             
-            <button className="lg:hidden hover:text-primary-red transition-colors">
-              <Menu className="w-6 h-6" />
+            <button 
+              className="lg:hidden hover:text-primary-red transition-colors"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
+        {/* Mobile Menu Dropdown */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden bg-slate-900 border-t border-slate-800 flex flex-col px-4 py-4 space-y-4">
+            <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className={`font-bold ${isActive('/') ? 'text-primary-red' : 'text-white'}`}>HOME</Link>
+            <Link href="/india" onClick={() => setIsMobileMenuOpen(false)} className={`font-bold ${isActive('/india') ? 'text-primary-red' : 'text-white'}`}>INDIA</Link>
+            <Link href="/politics" onClick={() => setIsMobileMenuOpen(false)} className={`font-bold ${isActive('/politics') ? 'text-primary-red' : 'text-white'}`}>POLITICS</Link>
+            <Link href="/world" onClick={() => setIsMobileMenuOpen(false)} className={`font-bold ${isActive('/world') ? 'text-primary-red' : 'text-white'}`}>WORLD</Link>
+            <Link href="/business" onClick={() => setIsMobileMenuOpen(false)} className={`font-bold ${isActive('/business') ? 'text-primary-red' : 'text-white'}`}>BUSINESS</Link>
+            <Link href="/sports" onClick={() => setIsMobileMenuOpen(false)} className={`font-bold ${isActive('/sports') ? 'text-primary-red' : 'text-white'}`}>SPORTS</Link>
+          </div>
+        )}
       </nav>
     </div>
   );

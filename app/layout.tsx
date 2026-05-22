@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 export const metadata: Metadata = {
   title: "National Voice | Latest Breaking News",
@@ -19,6 +20,7 @@ export default function RootLayout({
         <main className="flex-1 container mx-auto px-4 sm:px-6 py-6 w-full max-w-[1400px]">
           {children}
         </main>
+        <Footer />
       </body>
     </html>
   );
