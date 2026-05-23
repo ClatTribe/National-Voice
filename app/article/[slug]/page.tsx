@@ -1,9 +1,10 @@
 export const dynamic = 'force-dynamic';
 
-import { getNewsBySlug, getRelatedNews, timeAgo } from '../../../lib/news';
+import { getNewsBySlug, getRelatedNews, timeAgo, getLoc } from '../../../lib/news';
 import NewsCard from '../../../components/NewsCard';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { cookies } from 'next/headers';
 
 export async function generateMetadata({
   params,
@@ -12,11 +13,14 @@ export async function generateMetadata({
 }) {
   const resolvedParams = await Promise.resolve(params);
   const article = await getNewsBySlug(resolvedParams.slug);
+  const cookieStore = await cookies();
+  const lang = cookieStore.get('NEXT_LOCALE')?.value || 'hi';
+  
   if (!article) return { title: 'Article Not Found | National Voice' };
 
   return {
-    title: `${article.title} | National Voice`,
-    description: article.summary,
+    title: `${getLoc(article, 'title', lang)} | National Voice`,
+    description: getLoc(article, 'summary', lang),
   };
 }
 
@@ -27,13 +31,17 @@ export default async function ArticlePage({
 }) {
   const resolvedParams = await Promise.resolve(params);
   const article = await getNewsBySlug(resolvedParams.slug);
+  const cookieStore = await cookies();
+  const lang = cookieStore.get('NEXT_LOCALE')?.value || 'hi';
+  
   if (!article) notFound();
 
   const related = await getRelatedNews(article.category, article.slug, 3);
 
-  const htmlContent = article.content.includes('<')
-    ? article.content
-    : article.content
+  const locContent = getLoc(article, 'content', lang);
+  const htmlContent = locContent.includes('<')
+    ? locContent
+    : locContent
         .split('\n\n')
         .map((p: string) => `<p>${p}</p>`)
         .join('');
@@ -48,27 +56,27 @@ export default async function ArticlePage({
           href={`/${article.category.toLowerCase()}`}
           className="hover:text-primary-red transition-colors uppercase"
         >
-          {article.category}
+          {getLoc(article, 'category', lang)}
         </Link>
       </nav>
 
       <h1 className="text-3xl md:text-5xl font-heading font-bold text-text-primary leading-tight mb-6">
-        {article.title}
+        {getLoc(article, 'title', lang)}
       </h1>
 
       <div className="flex items-center gap-4 text-sm font-semibold text-text-secondary mb-8 pb-6 border-b-2 border-gray-100">
-        <span className="bg-primary-red shadow-[0_0_10px_rgba(198,40,40,0.4)] text-white px-3 py-1 rounded-full text-xs uppercase tracking-widest">{article.category}</span>
+        <span className="bg-primary-red shadow-[0_0_10px_rgba(198,40,40,0.4)] text-white px-3 py-1 rounded-full text-xs uppercase tracking-widest">{getLoc(article, 'category', lang)}</span>
         <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>{timeAgo(article.published_at)}</span>
         <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>Source: <a href={article.source_url} target="_blank" rel="noreferrer" className="text-primary-red hover:text-red-700 transition-colors hover:underline">{article.source_name || 'National Voice'}</a></span>
       </div>
 
       <div className="w-full aspect-[16/9] mb-10 rounded-xl overflow-hidden bg-light-gray shadow-inner">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={article.image_url || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800&q=80'} alt={article.title} className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700 ease-in-out" />
+        <img src={article.image_url || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800&q=80'} alt={getLoc(article, 'title', lang)} className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700 ease-in-out" />
       </div>
 
       <p className="text-xl text-text-secondary mb-10 leading-relaxed font-semibold border-l-4 border-primary-red pl-5 bg-red-50/50 py-3 rounded-r-lg">
-        {article.summary}
+        {getLoc(article, 'summary', lang)}
       </p>
 
       <div

@@ -3,16 +3,30 @@ import { getSupabaseClient } from './supabase';
 export interface NewsArticle {
   id: number;
   title: string;
+  title_hi?: string;
   slug: string;
   summary: string;
+  summary_hi?: string;
   content: string;
+  content_hi?: string;
   category: string;
+  category_hi?: string;
   tags: string[];
   source_name: string;
   source_url: string;
   image_url: string | null;
   published_at: string;
   created_at: string;
+}
+
+// Helper to get localized text
+export function getLoc(article: Partial<NewsArticle> | null, field: 'title' | 'summary' | 'content' | 'category', lang: string): string {
+  if (!article) return '';
+  if (lang === 'hi') {
+    const hiField = `${field}_hi` as keyof NewsArticle;
+    if (article[hiField]) return article[hiField] as string;
+  }
+  return (article[field] as string) || '';
 }
 
 export async function getAllNews(limit = 20, offset = 0): Promise<NewsArticle[]> {

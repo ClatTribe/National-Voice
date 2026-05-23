@@ -13,14 +13,18 @@ export async function GET() {
     Generate 12 realistic, completely different breaking news articles for today.
     You MUST cover these exact categories evenly: Politics, World, Business, Sports, Entertainment, India.
     
-    Return ONLY a valid JSON array of objects with this exact format, without any markdown formatting or extra text:
+    Return ONLY a valid JSON array of objects with this exact format, providing BOTH English and accurate Hindi (Devanagari) translations for the text fields:
     [
       {
-        "title": "A compelling headline",
+        "title": "A compelling English headline",
+        "title_hi": "एक आकर्षक हिंदी शीर्षक",
         "slug": "a-compelling-headline-slug",
-        "summary": "A 2-3 sentence summary of the news.",
-        "content": "<p>Full HTML formatted content with at least 3 paragraphs.</p>",
-        "category": "One of the categories",
+        "summary": "A 2-3 sentence summary in English.",
+        "summary_hi": "2-3 वाक्यों का हिंदी सारांश।",
+        "content": "<p>Full HTML formatted content with at least 3 paragraphs in English.</p>",
+        "content_hi": "<p>हिंदी में कम से कम 3 पैराग्राफ के साथ पूर्ण HTML स्वरूपित सामग्री।</p>",
+        "category": "Politics",
+        "category_hi": "राजनीति",
         "source_name": "National Voice",
         "source_url": "https://nationalvoice.com"
       }

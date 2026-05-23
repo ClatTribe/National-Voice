@@ -1,10 +1,11 @@
 export const dynamic = 'force-dynamic';
 
-import { getAllNews, getNewsByCategory, timeAgo } from '../lib/news';
+import { getAllNews, getNewsByCategory, timeAgo, getLoc } from '../lib/news';
 import { getYouTubeVideos } from '../lib/youtube';
 import NewsCard from '../components/NewsCard';
 import Link from 'next/link';
 import { PlayCircle, Bookmark, ChevronRight } from 'lucide-react';
+import { cookies } from 'next/headers';
 
 const DEFAULT_IMAGES = [
   'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800&q=80',
@@ -20,6 +21,8 @@ const DEFAULT_IMAGES = [
 export default async function HomePage() {
   const allNews = await getAllNews(20);
   const ytVideos = await getYouTubeVideos('UCxlr8HztjOTxnc9hDVVOW8w');
+  const cookieStore = await cookies();
+  const lang = cookieStore.get('NEXT_LOCALE')?.value || 'hi';
   
   const getImg = (id: number) => DEFAULT_IMAGES[(id || 0) % DEFAULT_IMAGES.length];
 
@@ -27,8 +30,11 @@ export default async function HomePage() {
   const dummyNews = {
     id: 999,
     title: 'Breaking News Coverage',
+    title_hi: 'ब्रेकिंग न्यूज़ कवरेज',
     summary: 'Stay tuned for the latest news updates and comprehensive coverage from National Voice.',
+    summary_hi: 'नेशनल वॉयस से नवीनतम समाचार अपडेट और व्यापक कवरेज के लिए बने रहें।',
     category: 'News',
+    category_hi: 'समाचार',
     slug: 'breaking-news',
     image_url: null,
     published_at: new Date().toISOString(),
@@ -47,10 +53,10 @@ export default async function HomePage() {
   const business = allNews.filter(n => n.category.toLowerCase().includes('business')).slice(0, 1);
   const sports = allNews.filter(n => n.category.toLowerCase().includes('sport')).slice(0, 1);
 
-  const row1 = politics.length ? politics[0] : allNews[12] || { ...dummyNews, id: 101, category: 'Politics' };
-  const row2 = world.length ? world[0] : allNews[13] || { ...dummyNews, id: 102, category: 'World' };
-  const row3 = business.length ? business[0] : allNews[14] || { ...dummyNews, id: 103, category: 'Business' };
-  const row4 = sports.length ? sports[0] : allNews[15] || { ...dummyNews, id: 104, category: 'Sports' };
+  const row1 = politics.length ? politics[0] : allNews[12] || { ...dummyNews, id: 101, category: 'Politics', category_hi: 'राजनीति' };
+  const row2 = world.length ? world[0] : allNews[13] || { ...dummyNews, id: 102, category: 'World', category_hi: 'दुनिया' };
+  const row3 = business.length ? business[0] : allNews[14] || { ...dummyNews, id: 103, category: 'Business', category_hi: 'व्यापार' };
+  const row4 = sports.length ? sports[0] : allNews[15] || { ...dummyNews, id: 104, category: 'Sports', category_hi: 'खेल' };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
@@ -60,11 +66,10 @@ export default async function HomePage() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="bg-[#FF0000] px-4 py-3 flex items-center justify-between">
             <h2 className="text-white font-heading font-bold text-sm tracking-wide flex items-center gap-2 uppercase">
-               <PlayCircle className="w-4 h-4" /> Watch Now
+               <PlayCircle className="w-4 h-4" /> {lang === 'hi' ? 'अभी देखें' : 'Watch Now'}
             </h2>
           </div>
           <div className="aspect-video w-full bg-black relative">
-            {/* UU replaces UC in channel ID to get the uploaded videos playlist */}
             <iframe 
               className="absolute inset-0 w-full h-full"
               src="https://www.youtube.com/embed/videoseries?list=UUxlr8HztjOTxnc9hDVVOW8w" 
@@ -75,7 +80,7 @@ export default async function HomePage() {
             ></iframe>
           </div>
           <div className="p-4 bg-gray-50">
-            <h3 className="font-bold text-sm text-gray-900 mb-4 border-b border-gray-200 pb-2">Suggested Videos</h3>
+            <h3 className="font-bold text-sm text-gray-900 mb-4 border-b border-gray-200 pb-2">{lang === 'hi' ? 'सुझाए गए वीडियो' : 'Suggested Videos'}</h3>
             <div className="flex flex-col gap-4">
                {ytVideos.length > 0 ? ytVideos.map((video, idx) => (
                  <Link href={video.link} target="_blank" key={idx} className="flex gap-3 group cursor-pointer bg-white p-2 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all">
@@ -96,7 +101,7 @@ export default async function HomePage() {
                )}
             </div>
             <Link href="https://www.youtube.com/channel/UCxlr8HztjOTxnc9hDVVOW8w/" target="_blank" className="block w-full text-center mt-5 py-2 rounded border-2 border-[#FF0000] text-[#FF0000] text-xs font-bold hover:bg-[#FF0000] hover:text-white transition-colors uppercase tracking-wider">
-              Visit Channel
+              {lang === 'hi' ? 'चैनल पर जाएं' : 'Visit Channel'}
             </Link>
           </div>
         </div>
@@ -112,15 +117,15 @@ export default async function HomePage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src={heroFeatured.image_url || getImg(heroFeatured.id)} 
-              alt={heroFeatured.title}
+              alt={getLoc(heroFeatured, 'title', lang)}
               className="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-in-out"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-6 sm:p-8">
               <span className="bg-primary-red shadow-[0_0_10px_rgba(198,40,40,0.8)] text-white text-xs font-bold px-3 py-1 rounded w-max mb-3 uppercase tracking-wider">
-                {heroFeatured.category}
+                {getLoc(heroFeatured, 'category', lang)}
               </span>
               <h1 className="text-white font-heading font-bold text-2xl sm:text-3xl lg:text-4xl leading-tight mb-4 group-hover:text-red-100 transition-colors duration-300">
-                {heroFeatured.title}
+                {getLoc(heroFeatured, 'title', lang)}
               </h1>
               <div className="flex items-center text-gray-300 text-sm font-semibold gap-4 opacity-90">
                 <span>{timeAgo(heroFeatured.published_at)}</span>
@@ -135,15 +140,15 @@ export default async function HomePage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={article.image_url || getImg(article.id)} 
-                  alt={article.title}
+                  alt={getLoc(article, 'title', lang)}
                   className="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-in-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-3 sm:p-4">
                   <span className="bg-primary-red text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded w-max mb-2 uppercase tracking-wide">
-                    {article.category}
+                    {getLoc(article, 'category', lang)}
                   </span>
                   <h2 className="text-white font-heading font-bold text-xs sm:text-sm leading-snug group-hover:text-red-100 transition-colors duration-300 line-clamp-3">
-                    {article.title}
+                    {getLoc(article, 'title', lang)}
                   </h2>
                 </div>
               </Link>
@@ -158,7 +163,7 @@ export default async function HomePage() {
           <div className="xl:col-span-7 bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-gray-100 mb-6 pb-2">
               <h2 className="text-primary-red font-heading font-extrabold text-xl uppercase tracking-wide flex items-center gap-2">
-                <span className="w-2 h-6 bg-primary-red rounded-sm"></span> Top Stories
+                <span className="w-2 h-6 bg-primary-red rounded-sm"></span> {lang === 'hi' ? 'प्रमुख खबरें' : 'Top Stories'}
               </h2>
             </div>
 
@@ -167,16 +172,16 @@ export default async function HomePage() {
                 <div key={story?.id} className="flex flex-col sm:flex-row gap-4 group cursor-pointer pb-6 border-b border-gray-100 last:border-0 last:pb-0">
                   <div className="w-full sm:w-[220px] h-[140px] flex-shrink-0 rounded-xl overflow-hidden relative shadow-sm">
                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={story?.image_url || getImg(story?.id || 0)} alt={story?.title} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                    <img src={story?.image_url || getImg(story?.id || 0)} alt={getLoc(story, 'title', lang)} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
                   </div>
                   <div className="flex flex-col py-1 flex-1">
                     <Link href={`/article/${story?.slug}`}>
                       <h3 className="font-heading font-bold text-gray-900 text-lg sm:text-xl mb-2 group-hover:text-primary-red transition-colors leading-snug">
-                        {story?.title}
+                        {getLoc(story, 'title', lang)}
                       </h3>
                     </Link>
                     <p className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">
-                      {story?.summary}
+                      {getLoc(story, 'summary', lang)}
                     </p>
                     <div className="mt-auto flex items-center justify-between text-gray-500 text-xs font-semibold">
                       <span className="flex items-center gap-2">{story ? timeAgo(story.published_at) : ''}</span>
@@ -191,7 +196,7 @@ export default async function HomePage() {
           <div className="xl:col-span-5 bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
             <div className="flex items-center justify-between border-b-2 border-gray-100 mb-6 pb-2">
               <h2 className="text-dark-navy font-heading font-extrabold text-xl uppercase tracking-wide flex items-center gap-2">
-                <span className="w-2 h-6 bg-dark-navy rounded-sm"></span> Latest Updates
+                <span className="w-2 h-6 bg-dark-navy rounded-sm"></span> {lang === 'hi' ? 'नवीनतम अपडेट' : 'Latest Updates'}
               </h2>
             </div>
             <div className="flex-1 overflow-y-auto pr-2 flex flex-col gap-5">
@@ -204,7 +209,7 @@ export default async function HomePage() {
                     <div className="relative pl-5 flex-1 border-l-2 border-gray-100 group-hover:border-primary-red transition-colors">
                       <span className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-gray-300 group-hover:bg-primary-red transition-colors shadow-sm"></span>
                       <p className="text-sm font-semibold text-gray-900 group-hover:text-primary-red transition-colors leading-snug line-clamp-3">
-                        {update?.title}
+                        {getLoc(update, 'title', lang)}
                       </p>
                     </div>
                   </Link>
@@ -218,10 +223,10 @@ export default async function HomePage() {
         {/* Category Grid Section */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-2">
           {[
-            { title: 'POLITICS', article: row1 },
-            { title: 'WORLD', article: row2 },
-            { title: 'BUSINESS', article: row3 },
-            { title: 'SPORTS', article: row4 }
+            { title: lang === 'hi' ? 'राजनीति' : 'POLITICS', article: row1 },
+            { title: lang === 'hi' ? 'दुनिया' : 'WORLD', article: row2 },
+            { title: lang === 'hi' ? 'व्यापार' : 'BUSINESS', article: row3 },
+            { title: lang === 'hi' ? 'खेल' : 'SPORTS', article: row4 }
           ].map(cat => (
             <div key={cat.title} className="flex flex-col bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow border border-gray-200 group">
               <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
@@ -232,10 +237,10 @@ export default async function HomePage() {
                   <div className="rounded-lg overflow-hidden aspect-[16/9] mb-3 shadow-sm relative">
                     <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10 pointer-events-none"></div>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={cat.article.image_url || getImg(cat.article.id)} alt={cat.article.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
+                    <img src={cat.article.image_url || getImg(cat.article.id)} alt={getLoc(cat.article, 'title', lang)} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
                   </div>
                   <h3 className="font-heading font-bold text-gray-900 text-sm mb-2 group-hover:text-primary-red transition-colors line-clamp-2 leading-snug">
-                    {cat.article.title}
+                    {getLoc(cat.article, 'title', lang)}
                   </h3>
                 </Link>
               )}
@@ -247,7 +252,7 @@ export default async function HomePage() {
         <section className="pt-6 border-t-2 border-gray-100">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-heading font-extrabold text-gray-900 flex items-center gap-3">
-              <span className="w-2 h-5 bg-primary-red rounded-sm"></span> More News
+              <span className="w-2 h-5 bg-primary-red rounded-sm"></span> {lang === 'hi' ? 'अधिक समाचार' : 'More News'}
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">

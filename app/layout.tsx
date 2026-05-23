@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from 'next/headers';
 import "./globals.css";
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -8,15 +9,18 @@ export const metadata: Metadata = {
   description: "Stay updated with the latest breaking news, politics, world events, sports and business updates.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const lang = cookieStore.get('NEXT_LOCALE')?.value || 'hi';
+
   return (
     <html lang="en" className="h-full antialiased scroll-smooth">
       <body className="min-h-full flex flex-col bg-gray-50 text-gray-900">
-        <Navbar />
+        <Navbar initialLang={lang} />
         <main className="flex-1 container mx-auto px-4 sm:px-6 py-6 w-full max-w-[1400px]">
           {children}
         </main>

@@ -3,26 +3,41 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Search, Menu, X } from 'lucide-react';
+import { Search, Menu, X, Globe } from 'lucide-react';
 
-export default function Navbar() {
+export default function Navbar({ initialLang = 'hi' }: { initialLang?: string }) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
+  const setLanguage = (lang: string) => {
+    document.cookie = `NEXT_LOCALE=${lang}; path=/`;
+    window.location.reload();
+  };
+  
   const isActive = (path: string) => pathname === path;
+
+  const navLinks = [
+    { path: '/', labelEn: 'HOME', labelHi: 'होम' },
+    { path: '/india', labelEn: 'INDIA', labelHi: 'भारत' },
+    { path: '/politics', labelEn: 'POLITICS', labelHi: 'राजनीति' },
+    { path: '/world', labelEn: 'WORLD', labelHi: 'दुनिया' },
+    { path: '/business', labelEn: 'BUSINESS', labelHi: 'व्यापार' },
+    { path: '/sports', labelEn: 'SPORTS', labelHi: 'खेल' },
+    { path: '/entertainment', labelEn: 'ENTERTAINMENT', labelHi: 'मनोरंजन' },
+  ];
 
   return (
     <div className="w-full font-sans sticky top-0 z-50 shadow-md">
       {/* Top red breaking news bar with scrolling marquee effect */}
       <div className="bg-primary-red px-4 py-2 flex justify-between items-center text-xs sm:text-sm font-medium tracking-wide text-white">
         <div className="flex items-center gap-4 overflow-hidden w-full relative">
-          <span className="font-bold whitespace-nowrap bg-primary-red relative z-10 pr-4">BREAKING NEWS</span>
+          <span className="font-bold whitespace-nowrap bg-primary-red relative z-10 pr-4">{initialLang === 'hi' ? 'ब्रेकिंग न्यूज़' : 'BREAKING NEWS'}</span>
           <div className="animate-marquee whitespace-nowrap overflow-hidden hidden sm:block">
             Lok Sabha Election Results 2024 Live Updates: NDA crosses 300 mark, BJP set for big win • Heavy rains lash Mumbai; schools remain closed
           </div>
           <span className="truncate sm:hidden">Lok Sabha Election Results 2024 Live...</span>
         </div>
-        <Link href="#" className="whitespace-nowrap hover:text-gray-200 transition-colors hidden sm:block">View All →</Link>
+        <Link href="#" className="whitespace-nowrap hover:text-gray-200 transition-colors hidden sm:block">{initialLang === 'hi' ? 'सभी देखें →' : 'View All →'}</Link>
       </div>
 
       {/* Main navigation */}
@@ -35,18 +50,37 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center space-x-6 xl:space-x-8 text-sm font-semibold tracking-wide h-full">
-            <Link href="/" className={`h-full flex items-center border-b-4 transition-colors ${isActive('/') ? 'border-primary-red text-white' : 'border-transparent hover:text-primary-red text-gray-300'}`}>HOME</Link>
-            <Link href="/india" className={`h-full flex items-center border-b-4 transition-colors ${isActive('/india') ? 'border-primary-red text-white' : 'border-transparent hover:text-primary-red text-gray-300'}`}>INDIA</Link>
-            <Link href="/politics" className={`h-full flex items-center border-b-4 transition-colors ${isActive('/politics') ? 'border-primary-red text-white' : 'border-transparent hover:text-primary-red text-gray-300'}`}>POLITICS</Link>
-            <Link href="/world" className={`h-full flex items-center border-b-4 transition-colors ${isActive('/world') ? 'border-primary-red text-white' : 'border-transparent hover:text-primary-red text-gray-300'}`}>WORLD</Link>
-            <Link href="/business" className={`h-full flex items-center border-b-4 transition-colors ${isActive('/business') ? 'border-primary-red text-white' : 'border-transparent hover:text-primary-red text-gray-300'}`}>BUSINESS</Link>
-            <Link href="/sports" className={`h-full flex items-center border-b-4 transition-colors ${isActive('/sports') ? 'border-primary-red text-white' : 'border-transparent hover:text-primary-red text-gray-300'}`}>SPORTS</Link>
-            <Link href="/entertainment" className={`h-full flex items-center border-b-4 transition-colors ${isActive('/entertainment') ? 'border-primary-red text-white' : 'border-transparent hover:text-primary-red text-gray-300'}`}>ENTERTAINMENT</Link>
-            <button className="h-full flex items-center border-b-4 border-transparent hover:text-primary-red text-gray-300 transition-colors gap-1">MORE <span className="text-[10px]">▼</span></button>
+            {navLinks.map((link) => (
+              <Link 
+                key={link.path} 
+                href={link.path} 
+                className={`h-full flex items-center border-b-4 transition-colors ${isActive(link.path) ? 'border-primary-red text-white' : 'border-transparent hover:text-primary-red text-gray-300'}`}
+              >
+                {initialLang === 'hi' ? link.labelHi : link.labelEn}
+              </Link>
+            ))}
+            <button className="h-full flex items-center border-b-4 border-transparent hover:text-primary-red text-gray-300 transition-colors gap-1">
+              {initialLang === 'hi' ? 'अधिक' : 'MORE'} <span className="text-[10px]">▼</span>
+            </button>
           </div>
-
           {/* Right Side Actions */}
           <div className="flex items-center gap-5">
+            {/* Language Toggle */}
+            <div className="hidden sm:flex items-center bg-gray-800 rounded overflow-hidden shadow-sm border border-gray-700">
+              <button 
+                onClick={() => setLanguage('hi')}
+                className={`px-3 py-1 text-xs font-bold transition-colors ${initialLang === 'hi' ? 'bg-[#FF0000] text-white' : 'text-gray-400 hover:text-white'}`}
+              >
+                हिंदी
+              </button>
+              <button 
+                onClick={() => setLanguage('en')}
+                className={`px-3 py-1 text-xs font-bold transition-colors ${initialLang === 'en' ? 'bg-[#FF0000] text-white' : 'text-gray-400 hover:text-white'}`}
+              >
+                ENG
+              </button>
+            </div>
+
             <button className="hover:text-primary-red transform hover:scale-110 transition-all duration-300">
               <Search className="w-5 h-5" />
             </button>
@@ -63,12 +97,33 @@ export default function Navbar() {
         {/* Mobile Menu Dropdown */}
         {isMobileMenuOpen && (
           <div className="lg:hidden bg-slate-900 border-t border-slate-800 flex flex-col px-4 py-4 space-y-4">
-            <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className={`font-bold ${isActive('/') ? 'text-primary-red' : 'text-white'}`}>HOME</Link>
-            <Link href="/india" onClick={() => setIsMobileMenuOpen(false)} className={`font-bold ${isActive('/india') ? 'text-primary-red' : 'text-white'}`}>INDIA</Link>
-            <Link href="/politics" onClick={() => setIsMobileMenuOpen(false)} className={`font-bold ${isActive('/politics') ? 'text-primary-red' : 'text-white'}`}>POLITICS</Link>
-            <Link href="/world" onClick={() => setIsMobileMenuOpen(false)} className={`font-bold ${isActive('/world') ? 'text-primary-red' : 'text-white'}`}>WORLD</Link>
-            <Link href="/business" onClick={() => setIsMobileMenuOpen(false)} className={`font-bold ${isActive('/business') ? 'text-primary-red' : 'text-white'}`}>BUSINESS</Link>
-            <Link href="/sports" onClick={() => setIsMobileMenuOpen(false)} className={`font-bold ${isActive('/sports') ? 'text-primary-red' : 'text-white'}`}>SPORTS</Link>
+            
+            {/* Mobile Language Toggle */}
+            <div className="flex items-center bg-gray-800 rounded w-max overflow-hidden shadow-sm border border-gray-700 mb-2">
+              <button 
+                onClick={() => setLanguage('hi')}
+                className={`px-4 py-1.5 text-xs font-bold transition-colors ${initialLang === 'hi' ? 'bg-[#FF0000] text-white' : 'text-gray-400 hover:text-white'}`}
+              >
+                हिंदी
+              </button>
+              <button 
+                onClick={() => setLanguage('en')}
+                className={`px-4 py-1.5 text-xs font-bold transition-colors ${initialLang === 'en' ? 'bg-[#FF0000] text-white' : 'text-gray-400 hover:text-white'}`}
+              >
+                ENG
+              </button>
+            </div>
+
+            {navLinks.map((link) => (
+              <Link 
+                key={link.path} 
+                href={link.path} 
+                onClick={() => setIsMobileMenuOpen(false)} 
+                className={`font-bold ${isActive(link.path) ? 'text-primary-red' : 'text-white'}`}
+              >
+                {initialLang === 'hi' ? link.labelHi : link.labelEn}
+              </Link>
+            ))}
           </div>
         )}
       </nav>

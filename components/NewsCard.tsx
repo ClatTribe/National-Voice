@@ -1,7 +1,10 @@
 import Link from 'next/link';
-import { timeAgo } from '../lib/news';
+import { cookies } from 'next/headers';
+import { timeAgo, getLoc } from '../lib/news';
 
-export default function NewsCard({ article }: { article: any }) {
+export default async function NewsCard({ article }: { article: any }) {
+  const cookieStore = await cookies();
+  const lang = cookieStore.get('NEXT_LOCALE')?.value || 'hi';
   if (!article) return null;
   
   const DEFAULT_IMAGES = [
@@ -24,17 +27,17 @@ export default function NewsCard({ article }: { article: any }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img 
             src={article.image_url || placeholderImg} 
-            alt={article.title} 
+            alt={getLoc(article, 'title', lang)} 
             className="object-cover w-full h-full transform group-hover:scale-110 transition-transform duration-700 ease-in-out" 
           />
           <div className="absolute top-3 left-3 bg-primary-red shadow-[0_0_10px_rgba(198,40,40,0.4)] text-white text-[10px] font-extrabold px-2 py-1 rounded uppercase tracking-widest z-20">
-            {article.category}
+            {getLoc(article, 'category', lang)}
           </div>
         </div>
         
         <div className="p-5 flex-1 flex flex-col">
           <h3 className="font-heading font-bold text-text-primary text-base sm:text-lg mb-3 group-hover:text-primary-red transition-colors duration-300 line-clamp-2 leading-snug">
-            {article.title}
+            {getLoc(article, 'title', lang)}
           </h3>
           <div className="flex items-center text-xs font-bold text-text-secondary mt-auto tracking-wide uppercase">
             <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-primary-red transition-colors"></span>{timeAgo(article.published_at)}</span>
