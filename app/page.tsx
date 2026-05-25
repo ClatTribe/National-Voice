@@ -82,7 +82,7 @@ export default async function HomePage() {
           <div className="p-4 bg-gray-50">
             <h3 className="font-bold text-sm text-gray-900 mb-4 border-b border-gray-200 pb-2">{lang === 'hi' ? 'सुझाए गए वीडियो' : 'Suggested Videos'}</h3>
             <div className="flex flex-col gap-4">
-               {ytVideos.length > 0 ? ytVideos.map((video, idx) => (
+               {ytVideos.length > 0 ? ytVideos.map((video: any, idx: number) => (
                  <Link href={video.link} target="_blank" key={idx} className="flex gap-3 group cursor-pointer bg-white p-2 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all">
                    <div className="w-20 h-14 bg-gray-200 rounded overflow-hidden flex-shrink-0 relative">
                      <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors z-10">
