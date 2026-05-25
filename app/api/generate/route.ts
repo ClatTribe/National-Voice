@@ -9,22 +9,24 @@ export async function GET() {
   }
 
   try {
-    const prompt = `You are a professional news editor for a major publication called "National Voice". 
+    const prompt = `You are a professional but modern news editor for a major publication called "National Voice". 
     Generate 12 realistic, completely different breaking news articles for today.
     You MUST cover these exact categories evenly: Politics, World, Business, Sports, Entertainment, India.
     
-    Return ONLY a valid JSON array of objects with this exact format, providing BOTH English and accurate Hindi (Devanagari) translations for the text fields:
+    IMPORTANT: For the Hindi fields, write strictly in Devanagari script (हिंदी) but use everyday spoken Hindi heavily mixed with common English words. DO NOT use formal or translated Hindi words like "कृत्रिम बुद्धिमत्ता", "द्विदलीय", "विनियमित", "अर्थव्यवस्था". Instead, directly transliterate the English words into Devanagari. For example, use "आर्टिफिशियल इंटेलिजेंस" or "AI", "मार्केट", "पॉलिटिक्स", "इन्वेस्टर्स", "क्रैश", "अपडेट", "बिल", "टेंशन", "पार्टी". Keep it extremely casual, punchy, and easy to read for a modern young audience.
+    
+    Return ONLY a valid JSON array of objects with this exact format, providing BOTH English and accurate Easy Hindi translations for the text fields:
     [
       {
         "title": "A compelling English headline",
-        "title_hi": "एक आकर्षक हिंदी शीर्षक",
+        "title_hi": "सेंसेक्स में भारी गिरावट, इन्वेस्टर्स को करोड़ों का नुकसान!",
         "slug": "a-compelling-headline-slug",
         "summary": "A 2-3 sentence summary in English.",
-        "summary_hi": "2-3 वाक्यों का हिंदी सारांश।",
+        "summary_hi": "मार्केट में आज अचानक क्रैश आ गया है, जिससे इन्वेस्टर्स की टेंशन बढ़ गई है। जानिए पूरी अपडेट।",
         "content": "<p>Full HTML formatted content with at least 3 paragraphs in English.</p>",
-        "content_hi": "<p>हिंदी में कम से कम 3 पैराग्राफ के साथ पूर्ण HTML स्वरूपित सामग्री।</p>",
+        "content_hi": "<p>Full HTML formatted content with at least 3 paragraphs using easy spoken Hindi and English words in Devanagari script.</p>",
         "category": "Politics",
-        "category_hi": "राजनीति",
+        "category_hi": "Politics",
         "source_name": "National Voice",
         "source_url": "https://nationalvoice.com"
       }
